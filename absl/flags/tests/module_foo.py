@@ -19,6 +19,10 @@ other flags as being important.  We want to make sure the unit tests
 for flags.py involve more than one module.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 from absl import flags
 from absl.flags import _helpers
 from absl.flags.tests import module_bar

@@ -186,15 +186,6 @@ class TestCaseTest(absltest.TestCase, HelperMixin):
         },
         expect_success=True)
 
-  def test_app_run(self):
-    stdout, _ = self.run_helper(
-        7,
-        ['--name=cat', '--name=dog'],
-        {'ABSLTEST_TEST_HELPER_USE_APP_RUN': '1'},
-        expect_success=True)
-    self.assertIn('Names in main() are: cat dog', stdout)
-    self.assertIn('Names in test_name_flag() are: cat dog', stdout)
-
   def test_assert_in(self):
     animals = {'monkey': 'banana', 'cow': 'grass', 'seal': 'fish'}
 
@@ -974,29 +965,6 @@ test case
 
     with self.assertRaisesWithPredicateMatch(ValueError, lambda e: True):
       raise ValueError
-
-  def test_assert_raises_with_predicate_match_exception_captured(self):
-    def _raise_value_error():
-      raise ValueError
-
-    predicate = lambda e: e is not None
-    with self.assertRaisesWithPredicateMatch(ValueError, predicate) as ctx_mgr:
-      _raise_value_error()
-
-    expected = getattr(ctx_mgr, 'exception', None)
-    self.assertIsInstance(expected, ValueError)
-
-  def test_assert_raises_with_literal_match_exception_captured(self):
-    message = 'some value error'
-    def _raise_value_error():
-      raise ValueError(message)
-
-    # predicate = lambda e: e is not None
-    with self.assertRaisesWithLiteralMatch(ValueError, message) as ctx_mgr:
-      _raise_value_error()
-
-    expected = getattr(ctx_mgr, 'exception', None)
-    self.assertIsInstance(expected, ValueError)
 
   def test_assert_contains_in_order(self):
     # Valids
@@ -2168,11 +2136,6 @@ class TempFileTest(absltest.TestCase, HelperMixin):
         'TempFileHelperTest/test_failure',
         'TempFileHelperTest/test_failure/failure',
         'TempFileHelperTest/test_success',
-        'TempFileHelperTest/test_subtest_failure',
-        'TempFileHelperTest/test_subtest_failure/parent',
-        'TempFileHelperTest/test_subtest_failure/successful_child',
-        'TempFileHelperTest/test_subtest_failure/failed_child',
-        'TempFileHelperTest/test_subtest_success',
     }
     self.run_tempfile_helper('SUCCESS', expected)
 
@@ -2181,8 +2144,6 @@ class TempFileTest(absltest.TestCase, HelperMixin):
         'TempFileHelperTest',
         'TempFileHelperTest/test_failure',
         'TempFileHelperTest/test_success',
-        'TempFileHelperTest/test_subtest_failure',
-        'TempFileHelperTest/test_subtest_success',
     }
     self.run_tempfile_helper('ALWAYS', expected)
 
@@ -2193,14 +2154,6 @@ class TempFileTest(absltest.TestCase, HelperMixin):
         'TempFileHelperTest/test_failure/failure',
         'TempFileHelperTest/test_success',
         'TempFileHelperTest/test_success/success',
-        'TempFileHelperTest/test_subtest_failure',
-        'TempFileHelperTest/test_subtest_failure/parent',
-        'TempFileHelperTest/test_subtest_failure/successful_child',
-        'TempFileHelperTest/test_subtest_failure/failed_child',
-        'TempFileHelperTest/test_subtest_success',
-        'TempFileHelperTest/test_subtest_success/parent',
-        'TempFileHelperTest/test_subtest_success/child0',
-        'TempFileHelperTest/test_subtest_success/child1',
     }
     self.run_tempfile_helper('OFF', expected)
 
@@ -2210,8 +2163,8 @@ class SkipClassTest(absltest.TestCase):
   def test_incorrect_decorator_call(self):
     with self.assertRaises(TypeError):
 
-      @absltest.skipThisClass
-      class Test(absltest.TestCase):  # pylint: disable=unused-variable
+      @absltest.skipThisClass  # pylint: disable=unused-variable
+      class Test(absltest.TestCase):
         pass
 
   def test_incorrect_decorator_subclass(self):
